@@ -1,19 +1,42 @@
 .container {
   padding: 2rem;
   width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
 }
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 1rem;
   margin-bottom: 2rem;
 }
+
 .titleGroup h1 {
   margin: 0;
   font-size: 2rem;
   font-weight: 500;
 }
+
 .titleGroup p {
   margin: 0.5rem 0 0 0;
   color: #666;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 1.25rem;
+  }
+
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }

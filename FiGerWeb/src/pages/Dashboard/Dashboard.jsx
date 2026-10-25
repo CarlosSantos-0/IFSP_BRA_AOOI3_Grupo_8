@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Button, Dialog } from '@mui/material';
 import styles from './Dashboard.module.css';
+import CategorySummary from '../../components/CategorySummary/CategorySummary';
 import TransactionFormModal from '../../components/TransactionFormModal/TransactionFormModal';
+import TransactionViewManager from '../../components/TransactionViewManager/TransactionViewManager';
 
 export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -11,10 +13,10 @@ export default function Dashboard() {
       <header className={styles.header}>
         <div className={styles.titleGroup}>
           <h1>Dashboard</h1>
-          <p>Acompanhe suas finanças de outubro.</p>
+          <p>Acompanhe suas finanças.</p>
         </div>
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           onClick={() => setIsModalOpen(true)}
           disableElevation
           sx={{ borderRadius: '8px', textTransform: 'none' }}
@@ -24,7 +26,8 @@ export default function Dashboard() {
       </header>
 
       <main className={styles.content}>
-        {/* Os componentes de widgets modulares serão inseridos aqui */}
+        <CategorySummary />
+        <TransactionViewManager />
       </main>
 
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>

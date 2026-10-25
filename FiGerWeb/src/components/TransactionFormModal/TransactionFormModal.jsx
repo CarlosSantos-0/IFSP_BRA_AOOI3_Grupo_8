@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { TextField, MenuItem, Select, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -6,41 +6,53 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import styles from './TransactionFormModal.module.css';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const today = new Date();
+const DEFAULT_DATE = new Date(
+  today.getTime() - today.getTimezoneOffset() * 60_000,
+).toISOString().slice(0, 10);
+
 export default function TransactionFormModal({ onClose }) {
   const queryClient = useQueryClient();
 
-  // Estados dos campos do formulário baseados no protótipo
   const [tipo, setTipo] = useState('saida');
   const [valor, setValor] = useState('');
-  const [data, setData] = useState('2026-10-24'); // Data default do protótipo
+  const [data, setData] = useState(DEFAULT_DATE);
   const [descricao, setDescricao] = useState('');
   const [categoria, setCategoria] = useState('');
 
-  // Configuração do POST com TanStack Query
   const createTransaction = useMutation({
     mutationFn: async (novaMovimentacao) => {
-      const response = await fetch('http://localhost:5000/api/movimentacoes', {
+      const response = await fetch(`${API_BASE_URL}/api/movimentacoes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(novaMovimentacao),
       });
-      if (!response.ok) throw new Error('Erro ao salvar');
-      return response.json();
+      if (!response.ok) {
+        throw new Error('Não foi possível salvar a movimentação.');
+      }
+      return response.json().catch(() => null);
     },
     onSuccess: () => {
-      // Invalida os caches dos GETs, forçando os widgets do Dashboard a recarregarem sozinhos
       queryClient.invalidateQueries({ queryKey: ['resumo-categorias'] });
       queryClient.invalidateQueries({ queryKey: ['movimentacoes'] });
-      onClose(); // Fecha o pop-up
+      onClose();
     },
   });
 
-  const handleSalvar = () => {
-    createTransaction.mutate({ tipo, valor, data, descricao, categoria });
+  const handleSalvar = (event) => {
+    event.preventDefault();
+    createTransaction.mutate({
+      tipo,
+      valor: Number(valor.replace(',', '.')),
+      data,
+      descricao: descricao.trim(),
+      categoria,
+    });
   };
 
   return (
-    <div className={styles.modalContainer}>
+    <form className={styles.modalContainer} onSubmit={handleSalvar}>
       <header className={styles.header}>
         <div>
           <span className={styles.subtitle}>NOVO REGISTRO</span>
@@ -51,15 +63,16 @@ export default function TransactionFormModal({ onClose }) {
         </IconButton>
       </header>
 
-      {/* Botões de Toggle: Entrada e Saída */}
       <div className={styles.typeToggle}>
-        <button 
+        <button
+          type="button"
           className={`${styles.toggleBtn} ${tipo === 'entrada' ? styles.activeEntrada : ''}`}
           onClick={() => setTipo('entrada')}
         >
           <ArrowDownwardIcon fontSize="small" /> Entrada
         </button>
-        <button 
+        <button
+          type="button"
           className={`${styles.toggleBtn} ${tipo === 'saida' ? styles.activeSaida : ''}`}
           onClick={() => setTipo('saida')}
         >
@@ -67,39 +80,43 @@ export default function TransactionFormModal({ onClose }) {
         </button>
       </div>
 
-      {/* Formulário */}
       <div className={styles.formGrid}>
         <div className={styles.fieldGroup}>
           <label>Valor</label>
-          <TextField 
+          <TextField
             fullWidth size="small" placeholder="0,00"
             value={valor} onChange={(e) => setValor(e.target.value)}
+            type="number" inputProps={{ min: '0.01', step: '0.01' }}
+            required
             InputProps={{ startAdornment: <span className={styles.currencyPrefix}>R$</span> }}
           />
         </div>
         
         <div className={styles.fieldGroup}>
           <label>Data</label>
-          <TextField 
+          <TextField
             type="date" fullWidth size="small"
             value={data} onChange={(e) => setData(e.target.value)}
+            required
           />
         </div>
       </div>
 
       <div className={styles.fieldGroupFull}>
         <label>Descrição</label>
-        <TextField 
+        <TextField
           fullWidth size="small" placeholder="Ex.: Supermercado"
           value={descricao} onChange={(e) => setDescricao(e.target.value)}
+          required
         />
       </div>
 
       <div className={styles.fieldGroupFull}>
         <label>Categoria</label>
-        <Select 
+        <Select
           fullWidth size="small" displayEmpty
           value={categoria} onChange={(e) => setCategoria(e.target.value)}
+          required
         >
           <MenuItem value="" disabled>Selecione</MenuItem>
           <MenuItem value="comida">Comida</MenuItem>
@@ -108,20 +125,25 @@ export default function TransactionFormModal({ onClose }) {
         </Select>
       </div>
 
-      {/* Footer */}
+      {createTransaction.isError && (
+        <p className={styles.error} role="alert">
+          {createTransaction.error.message}
+        </p>
+      )}
+
       <footer className={styles.footer}>
-        <Button onClick={onClose} sx={{ color: '#555', textTransform: 'none' }}>
+        <Button type="button" onClick={onClose} sx={{ color: '#555', textTransform: 'none' }}>
           Cancelar
         </Button>
-        <Button 
-          variant="contained" 
-          onClick={handleSalvar}
-          disabled={createTransaction.isLoading}
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={createTransaction.isPending}
           sx={{ backgroundColor: '#1A7A64', '&:hover': { backgroundColor: '#135c4b' }, textTransform: 'none' }}
         >
-          Salvar
+          {createTransaction.isPending ? 'Salvando...' : 'Salvar'}
         </Button>
       </footer>
-    </div>
+    </form>
   );
 }
