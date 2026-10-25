@@ -1,7 +1,7 @@
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import styles from './TableView.module.css';
 
-export default function TableView({ movimentacoes = [] }) {
+export default function TableView({ movimentacoes = [], onDelete, isDeleting = false }) {
   return (
     <div className={styles.tableContainer}>
       <table className={styles.table}>
@@ -12,6 +12,7 @@ export default function TableView({ movimentacoes = [] }) {
             <th scope="col">Data</th>
             <th scope="col">Tipo</th>
             <th scope="col">Valor</th>
+            <th scope="col">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -39,6 +40,17 @@ export default function TableView({ movimentacoes = [] }) {
                 }
               >
                 {formatCurrency(transaction.valor)}
+              </td>
+              <td>
+                <button
+                  type="button"
+                  className={styles.deleteButton}
+                  onClick={() => onDelete(transaction.id)}
+                  aria-label={`Apagar movimentação: ${transaction.descricao || 'Sem descrição'}`}
+                  disabled={isDeleting}
+                >
+                  Excluir
+                </button>
               </td>
             </tr>
           ))}

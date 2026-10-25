@@ -1,7 +1,12 @@
 import { formatCurrency, formatDate, getCategoryColor } from '../../utils/formatters';
 import styles from './KanbanView.module.css';
 
-export default function KanbanView({ movimentacoes = [], agruparPor = 'categoria' }) {
+export default function KanbanView({
+  movimentacoes = [],
+  agruparPor = 'categoria',
+  onDelete,
+  isDeleting = false,
+}) {
   const columns = movimentacoes.reduce((groups, transaction) => {
     const name = transaction[agruparPor] || 'outros';
     groups[name] ??= [];
@@ -55,6 +60,15 @@ export default function KanbanView({ movimentacoes = [], agruparPor = 'categoria
                     </span>
                     <time dateTime={transaction.data}>{formatDate(transaction.data)}</time>
                   </div>
+                  <button
+                    type="button"
+                    className={styles.deleteButton}
+                    onClick={() => onDelete(transaction.id)}
+                    aria-label={`Apagar movimentação: ${transaction.descricao || 'Sem descrição'}`}
+                    disabled={isDeleting}
+                  >
+                    Excluir
+                  </button>
                 </article>
               ))}
             </div>

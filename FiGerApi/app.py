@@ -79,5 +79,19 @@ def get_resumo_categorias():
 
     return jsonify(resumo), 200
 
+
+@app.route('/api/movimentacoes/<int:id>', methods=['DELETE'])
+def delete_movimentacao(id):
+    # Procura a movimentação pelo ID na base de dados
+    movimentacao = db.session.get(Movimentacao, id)
+    
+    if not movimentacao:
+        return jsonify({"erro": "Movimentação não encontrada"}), 404
+        
+    db.session.delete(movimentacao)
+    db.session.commit()
+    
+    return jsonify({"mensagem": "Movimentação apagada com sucesso"}), 200
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

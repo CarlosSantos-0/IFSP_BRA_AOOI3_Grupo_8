@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import KanbanView from '../KanbanView/KanbanView';
 import TableView from '../TableView/TableView';
 import styles from './TransactionViewManager.module.css';
@@ -28,6 +28,7 @@ export default function TransactionViewManager() {
   const [categoryFilter, setCategoryFilter] = useState('todas');
   const [search, setSearch] = useState('');
   const [groupBy, setGroupBy] = useState('categoria');
+  const queryClient = useQueryClient();
 
   const {
     data: transactions = [],
@@ -38,6 +39,27 @@ export default function TransactionViewManager() {
     queryKey: ['movimentacoes'],
     queryFn: fetchTransactions,
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id) => {
+      const response = await fetch(`${API_BASE_URL}/api/movimentacoes/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Não foi possível apagar a movimentação.');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['movimentacoes'] });
+      queryClient.invalidateQueries({ queryKey: ['resumo-categorias'] });
+    },
+  });
+
+  const handleDelete = (id) => {
+    if (window.confirm('Tem certeza que deseja apagar este registro?')) {
+      deleteMutation.mutate(id);
+    }
+  };
 
   const categories = useMemo(
     () =>
@@ -138,14 +160,28 @@ export default function TransactionViewManager() {
           {error.message}
         </p>
       )}
+      {deleteMutation.isError && (
+        <p className={styles.error} role="alert">
+          {deleteMutation.error.message}
+        </p>
+      )}
       {!isPending && !isError && filteredTransactions.length === 0 && (
         <p className={styles.message}>Nenhuma movimentação encontrada para esses filtros.</p>
       )}
       {!isPending && !isError && filteredTransactions.length > 0 && (
         view === 'table' ? (
-          <TableView movimentacoes={filteredTransactions} />
+          <TableView
+            movimentacoes={filteredTransactions}
+            onDelete={handleDelete}
+            isDeleting={deleteMutation.isPending}
+          />
         ) : (
-          <KanbanView movimentacoes={filteredTransactions} agruparPor={groupBy} />
+          <KanbanView
+            movimentacoes={filteredTransactions}
+            agruparPor={groupBy}
+            onDelete={handleDelete}
+            isDeleting={deleteMutation.isPending}
+          />
         )
       )}
     </section>
