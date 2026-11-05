@@ -1,108 +1,169 @@
+/*
+  Este arquivo estiliza o conteúdo do formulário.
+  O backdrop, a centralização e o arredondamento/sombra da caixa
+  vêm do <Dialog> do MUI e são ajustados em Dashboard.module.css (.dialog).
+*/
 .modalContainer {
   width: 480px;
   max-width: calc(100vw - 2rem);
-  background: #ffffff;
-  padding: 24px;
-  border-radius: 12px;
+  padding: 1.5rem;
+  background: var(--color-surface);
 }
 
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 24px;
-  border-bottom: 1px solid #eaeaea;
-  padding-bottom: 16px;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .subtitle {
-  font-size: 0.75rem;
+  color: var(--color-primary);
+  font-size: 0.68rem;
   font-weight: 700;
-  color: #1A7A64;
-  letter-spacing: 1px;
+  letter-spacing: 0.1em;
 }
 
 .title {
-  margin: 4px 0 0 0;
+  margin: 0.25rem 0 0;
+  color: var(--color-text);
   font-size: 1.5rem;
   font-weight: 400;
 }
 
 .closeBtn {
-  border: 1px solid #eaeaea !important;
-  border-radius: 8px !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 10px !important;
+  color: var(--color-text-muted) !important;
 }
 
+/* Entrada / Saída como botões de alternância */
 .typeToggle {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .toggleBtn {
-  flex: 1;
   display: flex;
+  flex: 1;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px;
-  border: 1px solid #eaeaea;
-  border-radius: 8px;
-  background: white;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
   cursor: pointer;
+  font-size: 0.9rem;
   font-weight: 500;
-  color: #555;
-  transition: all 0.2s;
+  transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s, color 0.15s;
 }
 
-.activeEntrada {
-  background: #f0fdf4;
+.toggleBtn:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+
+.toggleBtn.activeEntrada {
   border-color: #22c55e;
-  color: #15803d;
+  background: var(--color-income-soft);
+  box-shadow: 0 0 0 1px #22c55e;
+  color: var(--color-income);
+  font-weight: 600;
 }
 
-.activeSaida {
-  background: #fef2f2;
+.toggleBtn.activeSaida {
   border-color: #ef4444;
-  color: #b91c1c;
+  background: var(--color-expense-soft);
+  box-shadow: 0 0 0 1px #ef4444;
+  color: var(--color-expense);
+  font-weight: 600;
 }
 
 .formGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
-.fieldGroup label, .fieldGroupFull label {
+.fieldGroup label,
+.fieldGroupFull label {
   display: block;
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
   font-size: 0.85rem;
   font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 8px;
 }
 
 .fieldGroupFull {
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 }
 
 .currencyPrefix {
+  margin-right: 0.5rem;
+  color: var(--color-text-muted);
   font-weight: 600;
-  margin-right: 8px;
+}
+
+/* Ajustes nos campos do MUI para combinar com o resto da interface */
+.modalContainer :global(.MuiInputBase-root) {
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.modalContainer :global(.MuiOutlinedInput-root) {
+  border-radius: 10px;
+  background: var(--color-surface);
+}
+
+.modalContainer :global(.MuiOutlinedInput-notchedOutline) {
+  border-color: var(--color-border);
+}
+
+.modalContainer :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
+  border-color: var(--color-border-strong);
+}
+
+.modalContainer :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
+  border-color: var(--color-primary);
+  border-width: 1px;
+  box-shadow: 0 0 0 3px rgb(15 118 110 / 12%);
 }
 
 .footer {
   display: flex;
   justify-content: flex-end;
-  gap: 16px;
-  margin-top: 32px;
-  padding-top: 16px;
-  border-top: 1px solid #eaeaea;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Botões do rodapé (MUI): Cancelar neutro, Salvar na cor primária */
+.footer :global(.MuiButton-root) {
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.footer :global(.MuiButton-contained:not(.Mui-disabled)) {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.footer :global(.MuiButton-contained:not(.Mui-disabled):hover) {
+  background-color: var(--color-primary-hover);
 }
 
 .error {
   margin: 0;
-  color: #b91c1c;
+  color: var(--color-expense);
   font-size: 0.85rem;
 }
 

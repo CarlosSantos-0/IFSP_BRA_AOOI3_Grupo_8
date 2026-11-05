@@ -1,27 +1,53 @@
 .container {
-  padding: 2rem;
   width: 100%;
   max-width: 1440px;
+  min-height: 100vh;
   margin: 0 auto;
+  padding: 2rem;
+  background: var(--color-bg);
 }
 
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
+  justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .titleGroup h1 {
   margin: 0;
-  font-size: 2rem;
+  color: var(--color-text);
+  font-size: 1.75rem;
   font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .titleGroup p {
-  margin: 0.5rem 0 0 0;
-  color: #666;
+  margin: 0.35rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+/* Botão "Nova movimentação" (MUI) */
+.header :global(.MuiButton-root) {
+  height: 40px;
+  padding: 0 1rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: none;
+  white-space: nowrap;
+  background-color: #0F766E;
+}
+
+.header :global(.MuiButton-containedPrimary) {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.header :global(.MuiButton-containedPrimary:hover) {
+  background-color: var(--color-primary-hover);
 }
 
 .content {
@@ -30,13 +56,25 @@
   gap: 1.5rem;
 }
 
+/* Pop-up de nova movimentação: o <Dialog> do MUI já centraliza; aqui só o visual */
+.dialog :global(.MuiBackdrop-root) {
+  background-color: rgb(15 23 42 / 55%);
+  backdrop-filter: blur(2px);
+}
+
+.dialog :global(.MuiDialog-paper) {
+  margin: 1rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
 @media (max-width: 600px) {
   .container {
     padding: 1.25rem;
   }
 
   .header {
-    align-items: flex-start;
+    align-items: stretch;
     flex-direction: column;
   }
 }

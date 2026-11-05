@@ -1,5 +1,10 @@
 .section {
   min-width: 0;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .heading {
@@ -7,97 +12,177 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .eyebrow {
-  color: #1a7a64;
-  font-size: 0.7rem;
+  color: var(--color-primary);
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
 }
 
 .heading h2 {
   margin: 0.25rem 0 0;
-  color: #1a1a1a;
-  font-size: 1.2rem;
-  font-weight: 600;
+  color: var(--color-text);
+  font-size: 1.25rem;
+  font-weight: 500;
 }
 
+/* Alternância Tabela / Kanban */
 .viewToggle {
   display: flex;
   gap: 0.25rem;
   padding: 0.25rem;
-  border: 1px solid #eaeaea;
-  border-radius: 9px;
-  background: #f8f9fa;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface-muted);
 }
 
 .viewToggle button {
-  padding: 0.5rem 0.85rem;
+  padding: 0.4rem 0.9rem;
   border: 0;
-  border-radius: 6px;
+  border-radius: 7px;
   background: transparent;
-  color: #666;
+  color: var(--color-text-muted);
   cursor: pointer;
-  font: inherit;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.viewToggle button:hover {
+  color: var(--color-text);
 }
 
 .viewToggle button.activeView {
-  background: #fff;
-  color: #1a7a64;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 12%);
 }
 
+/* Barra de filtros */
 .filters {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .filters label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  min-width: 150px;
-  color: #555;
-  font-size: 0.8rem;
-  font-weight: 600;
+  position: relative;
+  display: block;
+  min-width: 170px;
+}
+
+/* Rótulos ficam só para leitores de tela, como no protótipo */
+.filters label > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .filters .searchField {
-  flex: 1 1 240px;
+  flex: 1 1 260px;
 }
 
 .filters input,
 .filters select {
-  min-height: 40px;
-  padding: 0.5rem 0.65rem;
-  border: 1px solid #d9d9d9;
-  border-radius: 7px;
-  background: #fff;
-  color: #1a1a1a;
-  font: inherit;
-  font-weight: 400;
+  width: 100%;
+  height: 40px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.filters input::placeholder {
+  color: var(--color-text-subtle);
+}
+
+.filters input:hover,
+.filters select:hover {
+  border-color: var(--color-border-strong);
+}
+
+.filters input:focus,
+.filters select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgb(15 118 110 / 12%);
+  outline: none;
+}
+
+.filters .searchField input {
+  padding-left: 2.25rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");
+  background-position: 0.75rem center;
+  background-repeat: no-repeat;
+}
+
+.filters select {
+  padding-right: 2rem;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right 0.65rem center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+/* "Agrupar por": só existe no Kanban e é sempre o 4º label */
+.filters label:nth-child(4) {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  margin-left: auto;
+}
+
+.filters label:nth-child(4) > span {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip-path: none;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.filters label:nth-child(4) select {
+  width: auto;
+  min-width: 130px;
 }
 
 .message,
 .error {
   margin: 0;
   padding: 1rem;
-  border-radius: 8px;
-  background: #f8f9fa;
-  color: #666;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
 }
 
 .error {
-  background: #fef2f2;
-  color: #b91c1c;
+  background: var(--color-expense-soft);
+  color: var(--color-expense);
 }
 
 @media (max-width: 600px) {
+  .section {
+    padding: 1rem;
+  }
+
   .heading {
     align-items: flex-start;
     flex-direction: column;
@@ -105,5 +190,9 @@
 
   .filters > label {
     flex: 1 1 100%;
+  }
+
+  .filters label:nth-child(4) {
+    margin-left: 0;
   }
 }

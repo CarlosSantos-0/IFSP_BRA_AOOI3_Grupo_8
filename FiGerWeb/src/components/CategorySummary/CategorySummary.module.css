@@ -1,85 +1,186 @@
 .section {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
 .eyebrow {
-  color: #1a7a64;
-  font-size: 0.7rem;
+  color: var(--color-primary);
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
 }
 
 .heading h2 {
-  margin: 0.25rem 0 0;
-  color: #1a1a1a;
-  font-size: 1.2rem;
-  font-weight: 600;
+  margin: 0.2rem 0 0;
+  color: var(--color-text);
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
+.subtitle {
+  margin: 0.2rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+/* Setas do carrossel */
+.nav {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.5rem;
+}
+
+.navButton {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.navButton svg {
+  font-size: 1.1rem;
+}
+
+.navButton:hover:not(:disabled) {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.navButton:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+/* Carrossel */
 .carousel {
   display: flex;
   gap: 1rem;
   overflow-x: auto;
-  padding: 0.25rem 0 0.75rem;
+  padding: 0.25rem 0.25rem 0.9rem;
   scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
 }
 
+/* Cartão: a cor da categoria chega pela variável --category-color (definida no JSX) */
 .card {
+  --category-color: var(--color-text-muted);
+
+  position: relative;
   display: flex;
-  flex: 0 0 220px;
-  align-items: center;
-  gap: 0.85rem;
-  min-height: 88px;
-  padding: 1rem;
-  border: 1px solid #eaeaea;
-  border-radius: 12px;
-  background: #fff;
+  flex: 0 0 224px;
+  flex-direction: column;
+  padding: 1.15rem 1.1rem 1rem;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
   scroll-snap-align: start;
 }
 
-.indicator {
-  width: 12px;
-  height: 12px;
-  flex: 0 0 12px;
-  border-radius: 50%;
+.stripe {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: var(--category-color);
 }
 
-.cardText h3,
-.cardText p {
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.iconTile {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--category-color) 12%, #fff);
+  color: var(--category-color);
+}
+
+.iconTile svg {
+  font-size: 1.1rem;
+}
+
+.share {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.name {
   margin: 0;
-}
-
-.cardText h3 {
-  color: #666;
-  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
   font-weight: 500;
   text-transform: capitalize;
 }
 
-.cardText p {
-  margin-top: 0.35rem;
-  color: #1a1a1a;
-  font-size: 1.05rem;
+.amount {
+  margin: 0.2rem 0 0.9rem;
+  color: var(--color-text);
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
   font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Barra de progresso: % da categoria no total de gastos */
+.track {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eef2f6;
+}
+
+.fill {
+  display: block;
+  min-width: 4px;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--category-color);
+  transition: width 0.4s ease;
+}
+
+.count {
+  margin: 0.6rem 0 0;
+  color: var(--color-text-subtle);
+  font-size: 0.72rem;
 }
 
 .message,
 .error {
   margin: 0;
   padding: 1rem;
-  border-radius: 8px;
-  background: #f8f9fa;
-  color: #666;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
 }
 
 .error {
-  background: #fef2f2;
-  color: #b91c1c;
+  background: var(--color-expense-soft);
+  color: var(--color-expense);
 }

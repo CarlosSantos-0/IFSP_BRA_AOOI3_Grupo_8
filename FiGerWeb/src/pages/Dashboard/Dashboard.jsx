@@ -19,7 +19,6 @@ export default function Dashboard() {
           variant="contained"
           onClick={() => setIsModalOpen(true)}
           disableElevation
-          sx={{ borderRadius: '8px', textTransform: 'none' }}
         >
           + Nova movimentação
         </Button>
@@ -30,7 +29,11 @@ export default function Dashboard() {
         <TransactionViewManager />
       </main>
 
-      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Dialog
+        className={styles.dialog}
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      >
         <TransactionFormModal onClose={() => setIsModalOpen(false)} />
       </Dialog>
     </div>

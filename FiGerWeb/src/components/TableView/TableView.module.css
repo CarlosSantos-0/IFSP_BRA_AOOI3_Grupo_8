@@ -1,8 +1,8 @@
 .tableContainer {
   overflow-x: auto;
-  border: 1px solid #eaeaea;
-  border-radius: 10px;
-  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
 }
 
 .table {
@@ -13,20 +13,22 @@
 
 .table th,
 .table td {
-  padding: 0.9rem 1rem;
-  border-bottom: 1px solid #eaeaea;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
   white-space: nowrap;
 }
 
 .table th {
-  background: #f8f9fa;
-  color: #666;
+  border-bottom-color: var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
   font-size: 0.75rem;
   font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .table td {
-  color: #555;
+  color: var(--color-text-muted);
   font-size: 0.85rem;
 }
 
@@ -34,8 +36,20 @@
   border-bottom: 0;
 }
 
+.table tbody tr:hover td {
+  background: var(--color-surface-muted);
+}
+
+/* Valor e ações alinhados à direita */
+.table th:nth-child(5),
+.table td:nth-child(5),
+.table th:nth-child(6),
+.table td:nth-child(6) {
+  text-align: right;
+}
+
 .table .description {
-  color: #1a1a1a;
+  color: var(--color-text);
   font-weight: 500;
 }
 
@@ -45,48 +59,51 @@
 
 .type {
   display: inline-block;
-  padding: 0.25rem 0.5rem;
+  padding: 0.2rem 0.6rem;
   border-radius: 999px;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
 }
 
 .income {
-  background: #f0fdf4;
-  color: #15803d;
+  background: var(--color-income-soft);
+  color: var(--color-income);
 }
 
 .expense {
-  background: #fef2f2;
-  color: #b91c1c;
+  background: var(--color-expense-soft);
+  color: var(--color-expense);
 }
 
 .table .incomeAmount,
 .table .expenseAmount {
+  font-variant-numeric: tabular-nums;
   font-weight: 700;
 }
 
 .table .incomeAmount {
-  color: #15803d;
+  color: var(--color-income);
 }
 
 .table .expenseAmount {
-  color: #b91c1c;
+  color: var(--color-expense);
 }
 
 .deleteButton {
-  padding: 0.4rem 0.65rem;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
-  background: #fff;
-  color: #b91c1c;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
   cursor: pointer;
-  font: inherit;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .deleteButton:hover:not(:disabled) {
-  background: #fef2f2;
+  border-color: #fecaca;
+  background: var(--color-expense-soft);
+  color: var(--color-expense);
 }
 
 .deleteButton:disabled {

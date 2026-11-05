@@ -3,125 +3,174 @@
   align-items: flex-start;
   gap: 1rem;
   overflow-x: auto;
-  padding: 0.25rem 0 1rem;
+  padding: 0.25rem 0 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
 }
 
+/* Coluna: cabeçalho (título + contagem) à esquerda, total à direita */
 .column {
-  display: flex;
-  flex: 0 0 280px;
-  flex-direction: column;
-  gap: 0.75rem;
-  min-height: 150px;
-  padding: 1rem;
-  border: 1px solid #eaeaea;
-  border-radius: 12px;
-  background: #f8f9fa;
-}
-
-.columnHeader,
-.columnTitle,
-.cardBottom {
-  display: flex;
+  display: grid;
+  flex: 1 0 240px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: start;
   align-items: center;
+  gap: 0.75rem 0.5rem;
+  min-height: 160px;
+  max-width: 360px;
+  padding: 0.9rem;
+  border: 1px solid #eef2f6;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
 }
 
-.columnHeader,
-.cardBottom {
-  justify-content: space-between;
+.columnHeader {
+  display: flex;
+  grid-column: 1;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
 .columnTitle {
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .columnTitle h3 {
   margin: 0;
-  color: #333;
-  font-size: 0.9rem;
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 0.85rem;
   font-weight: 600;
+  text-overflow: ellipsis;
   text-transform: capitalize;
+  white-space: nowrap;
 }
 
 .indicator {
-  width: 10px;
-  height: 10px;
-  flex: 0 0 10px;
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
   border-radius: 50%;
 }
 
 .count {
-  color: #666;
-  font-size: 0.8rem;
+  min-width: 1.4rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 .columnTotal {
+  grid-column: 2;
   margin: 0;
-  color: #666;
-  font-size: 0.8rem;
-  font-weight: 500;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
 .cardList {
   display: flex;
+  grid-column: 1 / -1;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
+/* Cartão: descrição + ação em cima, valor e data embaixo */
 .card {
-  padding: 0.9rem;
-  border: 1px solid #eaeaea;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 6%);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.4rem 0.5rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
 }
 
+/* A cor do valor já diz se é entrada ou saída; o texto fica só para leitores de tela */
 .type {
-  display: inline-block;
-  margin-bottom: 0.5rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-}
-
-.income,
-.incomeAmount {
-  color: #15803d;
-}
-
-.expense,
-.expenseAmount {
-  color: #b91c1c;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .card h4 {
-  margin: 0 0 0.75rem;
-  color: #1a1a1a;
-  font-size: 0.9rem;
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.85rem;
   font-weight: 500;
+  overflow-wrap: anywhere;
 }
 
 .cardBottom {
-  gap: 0.5rem;
+  display: flex;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.incomeAmount,
+.expenseAmount {
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.incomeAmount {
+  color: var(--color-income);
+}
+
+.expenseAmount {
+  color: var(--color-expense);
+}
+
+.incomeAmount::before {
+  content: '+ ';
+}
+
+.expenseAmount::before {
+  content: '\2212  ';
 }
 
 .cardBottom time {
-  color: #888;
-  font-size: 0.75rem;
+  color: var(--color-text-subtle);
+  font-size: 0.72rem;
 }
 
 .deleteButton {
-  margin-top: 0.75rem;
-  padding: 0.35rem 0.6rem;
-  border: 1px solid #fecaca;
+  grid-column: 2;
+  grid-row: 1;
+  padding: 0.15rem 0.5rem;
+  border: 0;
   border-radius: 6px;
-  background: #fff;
-  color: #b91c1c;
+  background: transparent;
+  color: var(--color-text-muted);
   cursor: pointer;
-  font: inherit;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  transition: background-color 0.15s, color 0.15s, opacity 0.15s;
 }
 
 .deleteButton:hover:not(:disabled) {
-  background: #fef2f2;
+  background: var(--color-expense-soft);
+  color: var(--color-expense);
 }
 
 .deleteButton:disabled {
@@ -129,8 +178,14 @@
   opacity: 0.6;
 }
 
-.incomeAmount,
-.expenseAmount {
-  font-size: 0.85rem;
-  font-weight: 700;
+/* No desktop o botão só aparece ao passar o mouse ou focar; no toque fica sempre visível */
+@media (hover: hover) and (pointer: fine) {
+  .deleteButton {
+    opacity: 0;
+  }
+
+  .card:hover .deleteButton,
+  .card:focus-within .deleteButton {
+    opacity: 1;
+  }
 }
