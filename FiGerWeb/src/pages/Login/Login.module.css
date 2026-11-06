@@ -1,0 +1,62 @@
+.page {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f3ff 0%, #f0fdfa 100%);
+}
+
+.card {
+  width: min(100%, 440px);
+  border: 1px solid var(--color-border);
+  border-radius: 1.25rem;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.hero {
+  padding: 2rem 2rem 0.5rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin-top: 1rem;
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.subtitle {
+  margin-top: 0.5rem;
+  color: var(--color-text-muted);
+}
+
+.content {
+  padding: 1rem 2rem 2rem;
+}
+
+.submit {
+  margin-top: 1rem !important;
+  border-radius: 0.8rem !important;
+  background: var(--color-primary) !important;
+}
+
+.helper {
+  display: block;
+  margin-top: 1rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}

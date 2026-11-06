@@ -1,0 +1,183 @@
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+  width: 100%;
+  height: 100vh;
+  padding: 1.5rem 1rem 1rem;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  padding: 0 0.5rem;
+}
+
+.logo {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.brandName {
+  color: var(--color-text);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.menuLabel {
+  display: block;
+  margin-bottom: 0.5rem;
+  padding: 0 0.75rem;
+  color: var(--color-text-subtle);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.link svg {
+  flex: none;
+  font-size: 1.25rem;
+}
+
+.link:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.link.active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding: 1rem 0.5rem 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.avatar {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: #ccfbf1;
+  color: var(--color-primary-hover);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.userInfo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.userName,
+.userEmail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userName {
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.userEmail {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+}
+
+.logout {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.logout:hover {
+  background: var(--color-expense-soft);
+  color: var(--color-expense);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: static;
+    height: auto;
+    padding: 1rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .brand {
+    margin-bottom: 1rem;
+  }
+
+  .menuLabel {
+    display: none;
+  }
+
+  .list {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .link span {
+    white-space: nowrap;
+  }
+
+  .user {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+  }
+}
