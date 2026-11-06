@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { formatCurrency, getCategoryColor } from '../../utils/formatters';
+import { formatCurrency } from '../../utils/formatters';
+import { useCategoryColor } from '../../hooks/useCategoryColor';
 import styles from './CategorySummary.module.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -44,6 +45,7 @@ export default function CategorySummary() {
     queryFn: fetchCategorySummary,
   });
 
+  const getColor = useCategoryColor();
   const carouselRef = useRef(null);
   const [scrollState, setScrollState] = useState({ canPrev: false, canNext: false });
 
@@ -136,7 +138,7 @@ export default function CategorySummary() {
               <article
                 className={styles.card}
                 key={name}
-                style={{ '--category-color': getCategoryColor(name) }}
+                style={{ '--category-color': getColor(name) }}
               >
                 <span className={styles.stripe} aria-hidden="true" />
 

@@ -1,4 +1,5 @@
-import { formatCurrency, formatDate, getCategoryColor } from '../../utils/formatters';
+import { formatCurrency, formatDate } from '../../utils/formatters';
+import { useCategoryColor } from '../../hooks/useCategoryColor';
 import styles from './KanbanView.module.css';
 
 export default function KanbanView({
@@ -7,6 +8,7 @@ export default function KanbanView({
   onDelete,
   isDeleting = false,
 }) {
+  const getColor = useCategoryColor();
   const columns = movimentacoes.reduce((groups, transaction) => {
     const name = transaction[agruparPor] || 'outros';
     groups[name] ??= [];
@@ -28,7 +30,7 @@ export default function KanbanView({
               <div className={styles.columnTitle}>
                 <span
                   className={styles.indicator}
-                  style={{ backgroundColor: getCategoryColor(name) }}
+                  style={{ backgroundColor: getColor(name) }}
                   aria-hidden="true"
                 />
                 <h3>{name}</h3>

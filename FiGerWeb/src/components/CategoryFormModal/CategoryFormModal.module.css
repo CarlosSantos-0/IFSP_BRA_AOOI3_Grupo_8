@@ -1,0 +1,260 @@
+.modal {
+  width: 420px;
+  max-width: calc(100vw - 2rem);
+  background: var(--color-surface);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.eyebrow {
+  color: var(--color-primary);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.title {
+  margin: 0.25rem 0 0;
+  color: var(--color-text);
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+.closeButton {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.closeButton:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field > label,
+.label {
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.field > input {
+  height: 44px;
+  padding: 0 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.field > input::placeholder {
+  color: var(--color-text-subtle);
+}
+
+.field > input:hover,
+.hexField:hover {
+  border-color: var(--color-border-strong);
+}
+
+.field > input:focus,
+.hexField:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgb(15 118 110 / 12%);
+  outline: none;
+}
+
+.field > input[aria-invalid='true'] {
+  border-color: var(--color-expense);
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.25rem;
+}
+
+.swatch {
+  position: relative;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  place-items: center;
+  border: 2px solid var(--color-surface);
+  border-radius: 50%;
+  background: var(--swatch-color);
+  box-shadow: 0 0 0 1px var(--color-border);
+  color: #fff;
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.swatch:hover {
+  transform: scale(1.08);
+}
+
+.swatchSelected {
+  box-shadow: 0 0 0 2px var(--swatch-color);
+}
+
+.swatch svg {
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 25%));
+}
+
+.customSwatch {
+  background: var(
+    --swatch-color,
+    conic-gradient(from 0deg, #ef4444, #f59e0b, #22c55e, #06b6d4, #6366f1, #d946ef, #ef4444)
+  );
+}
+
+.customSwatch:focus-within {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.colorInput {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.hexRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.hexRow label {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.hexField {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 140px;
+  height: 36px;
+  padding: 0 0.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.hexDot {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--color-border);
+}
+
+.hexField input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  text-transform: lowercase;
+}
+
+.hexField input:focus {
+  outline: none;
+}
+
+.fieldError,
+.formError {
+  margin: 0;
+  color: var(--color-expense);
+  font-size: 0.8rem;
+}
+
+.formError {
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-expense-soft);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.cancel,
+.save {
+  height: 40px;
+  padding: 0 1.1rem;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background-color 0.15s, opacity 0.15s;
+}
+
+.cancel {
+  background: transparent;
+  color: var(--color-text-muted);
+}
+
+.cancel:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.save {
+  min-width: 90px;
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.save:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.save:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}

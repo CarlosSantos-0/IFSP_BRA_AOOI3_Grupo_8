@@ -4,6 +4,7 @@ import { TextField, MenuItem, Select, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import { useCategories } from '../../hooks/useCategories';
 import styles from './TransactionFormModal.module.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -14,6 +15,17 @@ const DEFAULT_DATE = new Date(
 
 export default function TransactionFormModal({ onClose }) {
   const queryClient = useQueryClient();
+
+  // Categorias cadastradas; se a lista ainda não carregou, usa as três padrão
+  const { data: categories = [] } = useCategories();
+  const categoryOptions =
+    categories.length > 0
+      ? categories.map((item) => ({ value: item.nome, label: item.nome }))
+      : [
+          { value: 'comida', label: 'Comida' },
+          { value: 'transporte', label: 'Transporte' },
+          { value: 'moradia', label: 'Moradia' },
+        ];
 
   const [tipo, setTipo] = useState('saida');
   const [valor, setValor] = useState('');
@@ -119,9 +131,11 @@ export default function TransactionFormModal({ onClose }) {
           required
         >
           <MenuItem value="" disabled>Selecione</MenuItem>
-          <MenuItem value="comida">Comida</MenuItem>
-          <MenuItem value="transporte">Transporte</MenuItem>
-          <MenuItem value="moradia">Moradia</MenuItem>
+          {categoryOptions.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
         </Select>
       </div>
 
