@@ -36,6 +36,7 @@
   font-weight: 600;
   text-transform: none;
   white-space: nowrap;
+  background-color: #0F766E;
 }
 
 .header :global(.MuiButton-containedPrimary) {
