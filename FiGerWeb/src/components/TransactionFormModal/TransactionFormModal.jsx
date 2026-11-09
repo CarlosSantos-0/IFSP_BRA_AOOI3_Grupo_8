@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { TextField, MenuItem, Select, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { useCategories } from '../../hooks/useCategories';
+import { useCategories, useFormasPagamento } from '../../hooks/useCategories';
+import { apiFetch, readApiError } from '../../utils/api.js';
 import styles from './TransactionFormModal.module.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const today = new Date();
 const DEFAULT_DATE = new Date(
   today.getTime() - today.getTimezoneOffset() * 60_000,
@@ -15,34 +15,39 @@ const DEFAULT_DATE = new Date(
 
 export default function TransactionFormModal({ onClose }) {
   const queryClient = useQueryClient();
-
-  // Categorias cadastradas; se a lista ainda não carregou, usa as três padrão
   const { data: categories = [] } = useCategories();
+  const { data: paymentMethods = [] } = useFormasPagamento();
+
   const categoryOptions =
     categories.length > 0
-      ? categories.map((item) => ({ value: item.nome, label: item.nome }))
-      : [
-          { value: 'comida', label: 'Comida' },
-          { value: 'transporte', label: 'Transporte' },
-          { value: 'moradia', label: 'Moradia' },
-        ];
+      ? categories.map((item) => ({ value: item.id, label: item.nome }))
+      : [];
 
   const [tipo, setTipo] = useState('saida');
   const [valor, setValor] = useState('');
   const [data, setData] = useState(DEFAULT_DATE);
   const [descricao, setDescricao] = useState('');
-  const [categoria, setCategoria] = useState('');
+  const [categoriaId, setCategoriaId] = useState('');
+  const [formaId, setFormaId] = useState('');
+  const [formError, setFormError] = useState('');
+
+  useEffect(() => {
+    if (categoryOptions.length > 0 && !categoriaId) {
+      setCategoriaId(String(categoryOptions[0].value));
+    }
+  }, [categoryOptions, categoriaId]);
 
   const createTransaction = useMutation({
     mutationFn: async (novaMovimentacao) => {
-      const response = await fetch(`${API_BASE_URL}/api/movimentacoes`, {
+      const response = await apiFetch('/api/movimentacoes', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(novaMovimentacao),
       });
+
       if (!response.ok) {
-        throw new Error('Não foi possível salvar a movimentação.');
+        throw new Error(await readApiError(response, 'Não foi possível salvar a movimentação.'));
       }
+
       return response.json().catch(() => null);
     },
     onSuccess: () => {
@@ -54,12 +59,21 @@ export default function TransactionFormModal({ onClose }) {
 
   const handleSalvar = (event) => {
     event.preventDefault();
+    setFormError('');
+
+    const numericValue = Number.parseFloat(String(valor).replace(',', '.'));
+    if (!Number.isFinite(numericValue) || numericValue <= 0) {
+      setFormError('Informe um valor maior que zero.');
+      return;
+    }
+
     createTransaction.mutate({
       tipo,
-      valor: Number(valor.replace(',', '.')),
+      valor: numericValue,
       data,
       descricao: descricao.trim(),
-      categoria,
+      id_categoria: Number(categoriaId),
+      id_formpag: formaId ? Number(formaId) : null,
     });
   };
 
@@ -127,7 +141,8 @@ export default function TransactionFormModal({ onClose }) {
         <label>Categoria</label>
         <Select
           fullWidth size="small" displayEmpty
-          value={categoria} onChange={(e) => setCategoria(e.target.value)}
+          value={categoriaId}
+          onChange={(event) => setCategoriaId(event.target.value)}
           required
         >
           <MenuItem value="" disabled>Selecione</MenuItem>
@@ -139,9 +154,25 @@ export default function TransactionFormModal({ onClose }) {
         </Select>
       </div>
 
-      {createTransaction.isError && (
+      <div className={styles.fieldGroupFull}>
+        <label>Forma de pagamento</label>
+        <Select
+          fullWidth size="small" displayEmpty
+          value={formaId}
+          onChange={(event) => setFormaId(event.target.value)}
+        >
+          <MenuItem value="">Não informar</MenuItem>
+          {paymentMethods.map((method) => (
+            <MenuItem key={method.id} value={method.id}>
+              {method.nome}
+            </MenuItem>
+          ))}
+        </Select>
+      </div>
+
+      {(formError || createTransaction.isError) && (
         <p className={styles.error} role="alert">
-          {createTransaction.error.message}
+          {formError || createTransaction.error?.message}
         </p>
       )}
 

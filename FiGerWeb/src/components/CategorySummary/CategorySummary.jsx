@@ -5,14 +5,13 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { formatCurrency } from '../../utils/formatters';
 import { useCategoryColor } from '../../hooks/useCategoryColor';
+import { apiFetch, readApiError } from '../../utils/api.js';
 import styles from './CategorySummary.module.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
 async function fetchCategorySummary() {
-  const response = await fetch(`${API_BASE_URL}/api/resumo-categorias`);
+  const response = await apiFetch('/api/resumo-categorias');
   if (!response.ok) {
-    throw new Error('Não foi possível carregar o resumo por categoria.');
+    throw new Error(await readApiError(response, 'Não foi possível carregar o resumo por categoria.'));
   }
 
   const data = await response.json();

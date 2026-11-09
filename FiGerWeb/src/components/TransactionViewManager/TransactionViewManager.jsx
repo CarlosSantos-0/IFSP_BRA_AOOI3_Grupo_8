@@ -3,13 +3,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import KanbanView from '../KanbanView/KanbanView';
 import TableView from '../TableView/TableView';
 import styles from './TransactionViewManager.module.css';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { apiFetch, readApiError } from '../../utils/api.js';
 
 async function fetchTransactions() {
-  const response = await fetch(`${API_BASE_URL}/api/movimentacoes`);
+  const response = await apiFetch('/api/movimentacoes');
   if (!response.ok) {
-    throw new Error('Não foi possível carregar as movimentações.');
+    throw new Error(await readApiError(response, 'Não foi possível carregar as movimentações.'));
   }
 
   const data = await response.json();
@@ -42,11 +41,11 @@ export default function TransactionViewManager() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
-      const response = await fetch(`${API_BASE_URL}/api/movimentacoes/${id}`, {
+      const response = await apiFetch(`/api/movimentacoes/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
-        throw new Error('Não foi possível apagar a movimentação.');
+        throw new Error(await readApiError(response, 'Não foi possível apagar a movimentação.'));
       }
     },
     onSuccess: () => {

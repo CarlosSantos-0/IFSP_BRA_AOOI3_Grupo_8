@@ -27,6 +27,8 @@ function getInitials(name = '') {
 export default function Sidebar() {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const displayName = user?.nome ?? user?.name ?? 'Usuário';
+  const displayEmail = user?.email ?? 'usuario@exemplo.com';
 
   const handleLogout = () => {
     logout();
@@ -65,11 +67,11 @@ export default function Sidebar() {
       {isAuthenticated ? (
         <div className={styles.user}>
           <span className={styles.avatar} aria-hidden="true">
-            {getInitials(user.name)}
+            {getInitials(displayName)}
           </span>
           <div className={styles.userInfo}>
-            <strong className={styles.userName}>{user.name}</strong>
-            <span className={styles.userEmail}>{user.email}</span>
+            <strong className={styles.userName}>{displayName}</strong>
+            <span className={styles.userEmail}>{displayEmail}</span>
           </div>
           <button
             type="button"

@@ -1,22 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { apiFetch, readApiError } from '../utils/api.js';
 
 export const CATEGORIES_QUERY_KEY = ['categorias'];
-
-async function readError(response, fallback) {
-  try {
-    const body = await response.json();
-    return body.erro ?? body.error ?? body.mensagem ?? body.message ?? fallback;
-  } catch {
-    return fallback;
-  }
-}
+export const PAYMENT_METHODS_QUERY_KEY = ['formas-pagamento'];
 
 async function fetchCategories() {
-  const response = await fetch(`${API_BASE_URL}/api/categorias`);
+  const response = await apiFetch('/api/categorias');
   if (!response.ok) {
-    throw new Error(await readError(response, 'Não foi possível carregar as categorias.'));
+    throw new Error(await readApiError(response, 'Não foi possível carregar as categorias.'));
   }
 
   const data = await response.json();
@@ -36,6 +27,35 @@ export function useCategories() {
   });
 }
 
+export function useFormasPagamento() {
+  return useQuery({
+    queryKey: PAYMENT_METHODS_QUERY_KEY,
+    queryFn: async () => {
+      const response = await apiFetch('/api/formas-pagamento');
+
+      if (response.status === 404) {
+        return [];
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          await readApiError(response, 'Não foi possível carregar as formas de pagamento.'),
+        );
+      }
+
+      const data = await response.json();
+      const methods = Array.isArray(data) ? data : data.formas;
+
+      if (!Array.isArray(methods)) {
+        throw new Error('As formas de pagamento recebidas da API têm um formato inválido.');
+      }
+
+      return methods;
+    },
+    staleTime: Infinity,
+  });
+}
+
 function useRefreshCategoryData() {
   const queryClient = useQueryClient();
 
@@ -51,13 +71,12 @@ export function useCreateCategory() {
 
   return useMutation({
     mutationFn: async ({ nome, cor }) => {
-      const response = await fetch(`${API_BASE_URL}/api/categorias`, {
+      const response = await apiFetch('/api/categorias', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome, cor }),
       });
       if (!response.ok) {
-        throw new Error(await readError(response, 'Não foi possível criar a categoria.'));
+        throw new Error(await readApiError(response, 'Não foi possível criar a categoria.'));
       }
       return response.json().catch(() => null);
     },
@@ -70,13 +89,12 @@ export function useUpdateCategory() {
 
   return useMutation({
     mutationFn: async ({ id, nome, cor }) => {
-      const response = await fetch(`${API_BASE_URL}/api/categorias/${id}`, {
+      const response = await apiFetch(`/api/categorias/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome, cor }),
       });
       if (!response.ok) {
-        throw new Error(await readError(response, 'Não foi possível salvar a categoria.'));
+        throw new Error(await readApiError(response, 'Não foi possível salvar a categoria.'));
       }
       return response.json().catch(() => null);
     },
@@ -89,11 +107,9 @@ export function useDeleteCategory() {
 
   return useMutation({
     mutationFn: async (id) => {
-      const response = await fetch(`${API_BASE_URL}/api/categorias/${id}`, {
-        method: 'DELETE',
-      });
+      const response = await apiFetch(`/api/categorias/${id}`, { method: 'DELETE' });
       if (!response.ok) {
-        throw new Error(await readError(response, 'Não foi possível apagar a categoria.'));
+        throw new Error(await readApiError(response, 'Não foi possível apagar a categoria.'));
       }
     },
     onSuccess: refresh,
