@@ -1,4 +1,6 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = (
+  import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '')
+).replace(/\/+$/, '');
 const SESSION_KEY = 'figer:session';
 
 export const SESSION_EXPIRED_EVENT = 'figer:session-expired';
@@ -28,6 +30,10 @@ export function clearSession() {
 }
 
 export async function apiFetch(path, options = {}) {
+  if (!API_BASE_URL) {
+    throw new Error('Configure VITE_API_URL com a URL pública da API.');
+  }
+
   const session = readSession();
   const headers = {
     ...(options.body ? { 'Content-Type': 'application/json' } : {}),

@@ -23,9 +23,21 @@ CORS(app)
 
 # O banco mudou de formato (usuário, categoria, forma de pagamento...), então usa um arquivo novo.
 # O figer.db antigo não é mais lido. Para PostgreSQL, defina FIGER_DATABASE_URL.
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('FIGER_DATABASE_URL', 'sqlite:///figer_v2.db')
+database_url = os.environ.get('FIGER_DATABASE_URL')
+jwt_secret = os.environ.get('FIGER_JWT_SECRET')
+
+if os.environ.get('VERCEL') == '1':
+    if not database_url:
+        raise RuntimeError('Configure FIGER_DATABASE_URL com a URL do banco PostgreSQL.')
+    if not jwt_secret:
+        raise RuntimeError('Configure FIGER_JWT_SECRET com uma chave secreta forte.')
+
+if database_url and database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:///figer_v2.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = os.environ.get('FIGER_JWT_SECRET', 'chave-de-desenvolvimento-troque-em-producao')
+app.config['JWT_SECRET_KEY'] = jwt_secret or 'chave-de-desenvolvimento-troque-em-producao'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=12)
 
 db = SQLAlchemy(app)

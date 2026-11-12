@@ -10,5 +10,18 @@
       "framework": "vite"
     }
   },
-  "rewrites": []
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "figerapi"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "figerweb"
+      }
+    }
+  ]
 }
