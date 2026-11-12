@@ -19,8 +19,8 @@ A aplicação publicada pode ser acessada em:
 
 - **Dashboard (`/`)**: resumo de gastos por categoria e movimentações em tabela ou Kanban; também permite cadastrar novas movimentações.
 - **Categorias (`/categorias`)**: lista categorias e permite criar, editar e excluir.
-- **Relatórios (`/relatorios`)**: área planejada para relatórios; no momento, ainda está em construção.
-- **Minha conta (`/conta`)**: permite atualizar nome, e-mail e senha.
+- **Relatórios (`/relatorios`)**: permite consultar semana, mês ou ano, navegar entre períodos, ver saldo, entradas e saídas, comparar entradas/saídas com o período anterior, visualizar gráficos de movimentações e gastos por categoria e exportar os dados do período em CSV.
+- **Minha conta (`/conta`)**: permite atualizar nome e e-mail, alterar a senha e excluir a conta após confirmar a ação com a palavra `EXCLUIR` e a senha atual.
 
 O front-end e a API estão publicados como projetos separados na Vercel. A API atende às requisições do front-end; não é necessário abrir o projeto dela para usar o FiGer. Os links abaixo são para gerenciamento dos projetos e podem exigir uma conta com permissão na Vercel:
 
