@@ -57,15 +57,3 @@ npm run build
 npm run lint
 npm run preview
 ```
-
-## Publicação
-
-O front-end e a API podem ser publicados como projetos separados na Vercel:
-
-- No projeto da **API**, configure o diretório raiz como `FiGerApi` e as variáveis `FIGER_DATABASE_URL` e `FIGER_JWT_SECRET`.
-- No projeto do **front-end**, configure o diretório raiz como `FiGerWeb` e a variável `VITE_API_URL` com a URL pública da API, sem barra no final.
-- Faça um novo deploy após alterar variáveis. O Vite incorpora `VITE_API_URL` durante o build.
-
-Em produção, use PostgreSQL gerenciado, como o Supabase; o SQLite local não deve ser usado para persistência na Vercel. Para a API em funções serverless, utilize a connection string **Transaction pooler** do Supabase. A API cria as tabelas ao iniciar.
-
-Não publique nem versione senhas, URLs de banco com credenciais ou valores de `FIGER_JWT_SECRET`. Configure esses valores nas variáveis de ambiente privadas da Vercel.
