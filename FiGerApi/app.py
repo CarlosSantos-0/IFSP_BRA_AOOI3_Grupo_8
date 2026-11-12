@@ -32,8 +32,13 @@ if os.environ.get('VERCEL') == '1':
     if not jwt_secret:
         raise RuntimeError('Configure FIGER_JWT_SECRET com uma chave secreta forte.')
 
-if database_url and database_url.startswith('postgres://'):
-    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+if database_url:
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    if database_url.startswith('postgresql://'):
+        database_url = database_url.replace(
+            'postgresql://', 'postgresql+psycopg2://', 1
+        )
 
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:///figer_v2.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
