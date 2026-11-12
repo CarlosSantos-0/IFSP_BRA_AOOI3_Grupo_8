@@ -13,7 +13,7 @@ const queryClient = new QueryClient();
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#a020f0', // Tom roxo do protótipo
+      main: '#0f766e', // Tom verde do protótipo
     },
   },
 });

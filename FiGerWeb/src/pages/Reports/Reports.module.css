@@ -6,18 +6,134 @@
 }
 
 .header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
-.eyebrow {
-  color: var(--color-primary);
-  letter-spacing: 0.12em;
+.title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
-.title {
-  margin: 0.15rem 0 0;
+.subtitle {
+  margin: 0.25rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.exportButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 40px;
+  padding: 0 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
   color: var(--color-text);
-  font-weight: 700;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, opacity 0.15s;
+}
+
+.exportButton:hover:not(:disabled) {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-muted);
+}
+
+.exportButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Barra de período */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.segmented {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface-muted);
+}
+
+.segmented button {
+  padding: 0.4rem 0.9rem;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.segmented button:hover {
+  color: var(--color-text);
+}
+
+.segmented button.segmentActive {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 12%);
+}
+
+.periodNav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.periodNav button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.periodNav button:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+
+.periodLabel {
+  min-width: 150px;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Indicadores */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .card,
@@ -27,12 +143,34 @@
   background: var(--color-surface);
 }
 
+.card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem 1.25rem;
+  border-left-width: 4px;
+}
+
+.cardBalance {
+  border-left-color: var(--color-primary);
+}
+
+.cardIncome {
+  border-left-color: var(--color-income);
+}
+
+.cardExpense {
+  border-left-color: var(--color-expense);
+}
+
 .label {
   color: var(--color-text-muted);
+  font-size: 0.8rem;
 }
 
 .value {
+  font-size: 1.6rem;
   font-weight: 700;
+  line-height: 1.2;
 }
 
 .income {
@@ -47,35 +185,211 @@
   color: var(--color-text);
 }
 
+.note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.noteGood {
+  color: var(--color-income);
+}
+
+.noteBad {
+  color: var(--color-expense);
+}
+
+/* Gráficos */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+
 .chartCard {
-  margin-top: 1.5rem;
+  min-width: 0;
+  padding: 1.25rem;
+}
+
+.chartHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .chartTitle {
-  margin-bottom: 1rem;
+  margin: 0;
   color: var(--color-text);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.chartSubtitle {
+  margin: 0.15rem 0 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.legend {
+  display: flex;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  list-style: none;
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dot {
+  display: inline-block;
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dotIncome {
+  background: #0f766e;
+}
+
+.dotExpense {
+  background: #f4a39a;
 }
 
 .chart {
   display: flex;
-  align-items: flex-end;
+  align-items: stretch;
   gap: 0.9rem;
-  height: 220px;
-  padding: 1rem 0.5rem 0;
-  border-radius: 0.9rem;
+  height: 240px;
+  padding: 0.5rem 0.5rem 0;
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0.9rem 0.9rem 0 0;
   background: linear-gradient(180deg, rgba(15, 118, 110, 0.04), rgba(15, 118, 110, 0));
+}
+
+.group {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bars {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
 }
 
 .bar {
   display: block;
-  flex: 1;
-  min-width: 0;
-  border-radius: 0.75rem 0.75rem 0 0;
+  width: 100%;
+  max-width: 28px;
+  min-height: 2px;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.barIncome {
   background: linear-gradient(180deg, #14b8a6 0%, #0f766e 100%);
+}
+
+.barExpense {
+  background: #f4a39a;
+}
+
+.groupLabel {
+  padding: 0.4rem 0;
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+/* Gastos por categoria */
+.categoryList {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.categoryTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.8rem;
+}
+
+.categoryName {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.categoryValue {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.track {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+}
+
+/* Estados */
+.message,
+.error {
+  margin: 0;
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+}
+
+.error {
+  background: var(--color-expense-soft);
+  color: var(--color-expense);
+}
+
+@media (max-width: 900px) {
+  .kpis,
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 600px) {
   .page {
     padding: 1.25rem;
+  }
+
+  .header {
+    flex-direction: column;
+  }
+
+  .chartHeader {
+    flex-direction: column;
   }
 }
