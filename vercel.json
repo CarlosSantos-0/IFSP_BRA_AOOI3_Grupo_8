@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "figerapi": {
+      "root": "FiGerApi",
+      "framework": "flask"
+    },
+    "figerweb": {
+      "root": "FiGerWeb",
+      "framework": "vite"
+    }
+  },
+  "rewrites": []
+}
