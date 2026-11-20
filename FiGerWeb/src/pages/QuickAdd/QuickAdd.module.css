@@ -1,0 +1,240 @@
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-bg);
+  /* Respeita o entalhe/barra de status do celular no modo app */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.logo {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.online {
+  background: var(--color-income-soft);
+  color: var(--color-income);
+}
+
+.offline {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.dashboardLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: auto;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.dashboardLink:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.feedback {
+  margin: 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-income-soft);
+  color: var(--color-income);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.card {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+/* O formulário foi feito para o modal (480px fixos); aqui ele ocupa o cartão */
+.card > form {
+  width: 100%;
+  max-width: none;
+}
+
+.pending {
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.pendingHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.pendingHeader h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.syncButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.7rem;
+  border: 0;
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.syncButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pendingList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pendingItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.pendingInfo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pendingInfo strong {
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pendingInfo span {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.pendingInfo .pendingError {
+  color: var(--color-expense);
+}
+
+.income,
+.expense {
+  font-size: 0.88rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.income {
+  color: var(--color-income);
+}
+
+.expense {
+  color: var(--color-expense);
+}
+
+.discard {
+  display: grid;
+  place-items: center;
+  padding: 0.3rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.discard:hover {
+  background: var(--color-expense-soft);
+  color: var(--color-expense);
+}
+
+.pendingHint {
+  margin: 0.5rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.install {
+  margin-top: 0.25rem;
+}

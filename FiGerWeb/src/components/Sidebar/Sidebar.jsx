@@ -7,6 +7,7 @@ import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useAuth } from '../../hooks/useAuth';
+import InstallAppButton from '../InstallAppButton/InstallAppButton';
 import styles from './Sidebar.module.css';
 
 const NAV_ITEMS = [
@@ -63,6 +64,10 @@ export default function Sidebar() {
           ))}
         </ul>
       </nav>
+
+      <div className={styles.install}>
+        <InstallAppButton />
+      </div>
 
       {isAuthenticated ? (
         <div className={styles.user}>

@@ -87,6 +87,16 @@
   font-weight: 600;
 }
 
+/* "Instalar app": fica logo acima do perfil (o botão some quando não há o que instalar) */
+.install {
+  margin-top: auto;
+  padding: 0 0.5rem 0.75rem;
+}
+
+.install:empty {
+  display: none;
+}
+
 /* Perfil no rodapé */
 .user {
   display: flex;

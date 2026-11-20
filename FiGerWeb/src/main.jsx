@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import App from './App.jsx';
 import './index.css';
+// Precisa carregar cedo: o navegador avisa que o app pode ser instalado logo na abertura
+import './utils/installPrompt.js';
 
 // Configuração do TanStack Query para gerenciar o cache das requisições ao Flask
 const queryClient = new QueryClient();

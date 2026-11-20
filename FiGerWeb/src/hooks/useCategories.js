@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiFetch, readApiError } from '../utils/api.js';
+import { fetchWithOfflineFallback } from '../utils/offlineStore.js';
 
 export const CATEGORIES_QUERY_KEY = ['categorias'];
 export const PAYMENT_METHODS_QUERY_KEY = ['formas-pagamento'];
@@ -20,17 +21,23 @@ async function fetchCategories() {
   return categories;
 }
 
+// As duas listas abaixo também ficam guardadas no aparelho, para o formulário
+// de nova movimentação funcionar sem internet (ver utils/offlineStore.js).
+// networkMode 'always': sem isso o TanStack Query pausa a busca quando está
+// offline e nunca chega a usar a cópia guardada.
 export function useCategories() {
   return useQuery({
     queryKey: CATEGORIES_QUERY_KEY,
-    queryFn: fetchCategories,
+    queryFn: () => fetchWithOfflineFallback('categorias', fetchCategories),
+    networkMode: 'always',
   });
 }
 
 export function useFormasPagamento() {
   return useQuery({
     queryKey: PAYMENT_METHODS_QUERY_KEY,
-    queryFn: async () => {
+    networkMode: 'always',
+    queryFn: () => fetchWithOfflineFallback('formas-pagamento', async () => {
       const response = await apiFetch('/api/formas-pagamento');
 
       if (response.status === 404) {
@@ -51,7 +58,7 @@ export function useFormasPagamento() {
       }
 
       return methods;
-    },
+    }),
     staleTime: Infinity,
   });
 }

@@ -6,6 +6,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useCategories, useFormasPagamento } from '../../hooks/useCategories';
 import { apiFetch, readApiError } from '../../utils/api.js';
+import { addPendingTransaction, isNetworkError } from '../../utils/offlineStore.js';
 import styles from './TransactionFormModal.module.css';
 
 const today = new Date();
@@ -13,7 +14,37 @@ const DEFAULT_DATE = new Date(
   today.getTime() - today.getTimezoneOffset() * 60_000,
 ).toISOString().slice(0, 10);
 
-export default function TransactionFormModal({ onClose }) {
+// Salva na API; sem internet, guarda na fila de pendentes (enviada depois).
+async function saveTransaction(novaMovimentacao, categoriaNome) {
+  const saveOffline = () => {
+    addPendingTransaction(novaMovimentacao, { categoriaNome });
+    return { offline: true };
+  };
+
+  if (!navigator.onLine) return saveOffline();
+
+  let response;
+  try {
+    response = await apiFetch('/api/movimentacoes', {
+      method: 'POST',
+      body: JSON.stringify(novaMovimentacao),
+    });
+  } catch (error) {
+    if (isNetworkError(error)) return saveOffline();
+    throw error;
+  }
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response, 'Não foi possível salvar a movimentação.'));
+  }
+
+  return { offline: false };
+}
+
+// Usado de dois jeitos:
+//  - modal do Dashboard: recebe onClose (mostra X e "Cancelar")
+//  - tela do app instalado (/nova): sem onClose, avisa pelo onSaved
+export default function TransactionFormModal({ onClose, onSaved }) {
   const queryClient = useQueryClient();
   const { data: categories = [] } = useCategories();
   const { data: paymentMethods = [] } = useFormasPagamento();
@@ -38,22 +69,16 @@ export default function TransactionFormModal({ onClose }) {
   }, [categoryOptions, categoriaId]);
 
   const createTransaction = useMutation({
-    mutationFn: async (novaMovimentacao) => {
-      const response = await apiFetch('/api/movimentacoes', {
-        method: 'POST',
-        body: JSON.stringify(novaMovimentacao),
-      });
-
-      if (!response.ok) {
-        throw new Error(await readApiError(response, 'Não foi possível salvar a movimentação.'));
+    // 'always': offline o TanStack Query pausaria o envio em vez de rodar a função
+    networkMode: 'always',
+    mutationFn: ({ payload, categoriaNome }) => saveTransaction(payload, categoriaNome),
+    onSuccess: (result) => {
+      if (!result.offline) {
+        queryClient.invalidateQueries({ queryKey: ['resumo-categorias'] });
+        queryClient.invalidateQueries({ queryKey: ['movimentacoes'] });
       }
-
-      return response.json().catch(() => null);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['resumo-categorias'] });
-      queryClient.invalidateQueries({ queryKey: ['movimentacoes'] });
-      onClose();
+      onSaved?.(result);
+      onClose?.();
     },
   });
 
@@ -67,13 +92,22 @@ export default function TransactionFormModal({ onClose }) {
       return;
     }
 
+    if (!categoriaId) {
+      setFormError('Escolha uma categoria.');
+      return;
+    }
+
     createTransaction.mutate({
-      tipo,
-      valor: numericValue,
-      data,
-      descricao: descricao.trim(),
-      id_categoria: Number(categoriaId),
-      id_formpag: formaId ? Number(formaId) : null,
+      payload: {
+        tipo,
+        valor: numericValue,
+        data,
+        descricao: descricao.trim(),
+        id_categoria: Number(categoriaId),
+        id_formpag: formaId ? Number(formaId) : null,
+      },
+      categoriaNome: categoryOptions.find((option) => String(option.value) === String(categoriaId))
+        ?.label,
     });
   };
 
@@ -84,9 +118,11 @@ export default function TransactionFormModal({ onClose }) {
           <span className={styles.subtitle}>NOVO REGISTRO</span>
           <h2 className={styles.title}>Nova movimentação</h2>
         </div>
-        <IconButton onClick={onClose} size="small" className={styles.closeBtn}>
-          <CloseIcon />
-        </IconButton>
+        {onClose && (
+          <IconButton onClick={onClose} size="small" className={styles.closeBtn} aria-label="Fechar">
+            <CloseIcon />
+          </IconButton>
+        )}
       </header>
 
       <div className={styles.typeToggle}>
@@ -177,9 +213,11 @@ export default function TransactionFormModal({ onClose }) {
       )}
 
       <footer className={styles.footer}>
-        <Button type="button" onClick={onClose} sx={{ color: '#555', textTransform: 'none' }}>
-          Cancelar
-        </Button>
+        {onClose && (
+          <Button type="button" onClick={onClose} sx={{ color: '#555', textTransform: 'none' }}>
+            Cancelar
+          </Button>
+        )}
         <Button
           type="submit"
           variant="contained"

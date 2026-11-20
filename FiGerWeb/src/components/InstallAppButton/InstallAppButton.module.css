@@ -1,0 +1,66 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 40px;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--color-primary);
+  border-radius: 10px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background-color 0.15s;
+}
+
+.button:hover {
+  background: #ccfbf1;
+}
+
+.help {
+  max-width: 360px;
+  padding: 1.5rem;
+  color: var(--color-text);
+}
+
+.help h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+}
+
+.help p {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.help ol {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+.help svg {
+  vertical-align: -0.15em;
+}
+
+.note {
+  color: var(--color-text-muted);
+}
+
+.close {
+  width: 100%;
+  height: 40px;
+  margin-top: 0.5rem;
+  border: 0;
+  border-radius: 10px;
+  background: var(--color-primary);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}

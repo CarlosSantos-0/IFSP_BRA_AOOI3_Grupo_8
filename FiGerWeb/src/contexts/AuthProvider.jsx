@@ -47,10 +47,8 @@ export function AuthProvider({ children }) {
         }
       })
       .catch(() => {
-        if (!ignore) {
-          clearSession();
-          setUser(null);
-        }
+        // Sem internet (ou API fora do ar): mantém a sessão guardada para o app
+        // continuar funcionando offline. Só um 401 (acima) encerra a sessão.
       });
 
     return () => {
