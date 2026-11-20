@@ -12,8 +12,6 @@ O projeto é dividido em:
 A aplicação publicada pode ser acessada em:
 
 - **FiGer:** [abrir aplicação](https://ifsp-bra-aooi-3-grupo-8.vercel.app)
-- **Criar conta:** [cadastro](https://ifsp-bra-aooi-3-grupo-8.vercel.app/cadastro)
-- **Entrar:** [login](https://ifsp-bra-aooi-3-grupo-8.vercel.app/login)
 
 É necessário criar uma conta ou entrar para acessar as páginas internas. Após o login, a navegação lateral dá acesso a:
 
