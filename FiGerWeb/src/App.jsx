@@ -8,6 +8,8 @@ import Reports from './pages/Reports/Reports.jsx';
 import Account from './pages/Account/Account.jsx';
 import Login from './pages/Login/Login.jsx';
 import Register from './pages/Register/Register.jsx';
+import ForgotPassword from './pages/ForgotPassword/ForgotPassword.jsx';
+import ResetPassword from './pages/ResetPassword/ResetPassword.jsx';
 import ProtectedRoute from './routes/ProtectedRoute.jsx';
 
 function PublicRoute({ children }) {
@@ -26,7 +28,9 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/cadastro" element={<PublicRoute><Register /></PublicRoute>} />
-        
+        <Route path="/recuperar-senha" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+        {/* Sem PublicRoute: o link do e-mail precisa abrir mesmo com alguém logado */}
+        <Route path="/redefinir-senha" element={<ResetPassword />} />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>

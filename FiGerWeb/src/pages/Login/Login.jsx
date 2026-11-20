@@ -65,7 +65,10 @@ export default function Login() {
         </div>
 
         <div className={styles.field}>
-          <label htmlFor="login-senha">Senha</label>
+          <div className={styles.labelRow}>
+            <label htmlFor="login-senha">Senha</label>
+            <Link to="/recuperar-senha">Esqueceu a senha?</Link>
+          </div>
           <div className={styles.inputWrap}>
             <span className={styles.inputIcon} aria-hidden="true">
               <LockOutlinedIcon fontSize="small" />

@@ -253,7 +253,41 @@
   font-size: 0.85rem;
 }
 
+.formSuccess {
+  margin: 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-income-soft);
+  color: var(--color-income);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.formError a {
+  color: inherit;
+  font-weight: 600;
+}
+
+.labelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.labelRow a {
+  color: var(--color-primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.labelRow a:hover {
+  text-decoration: underline;
+}
+
 .submit {
+  text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: center;

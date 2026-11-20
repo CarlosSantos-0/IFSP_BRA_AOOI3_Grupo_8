@@ -1,8 +1,12 @@
+import hashlib
 import math
 import os
 import re
+import secrets
+import smtplib
 import sqlite3
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
+from email.message import EmailMessage
 from functools import wraps
 
 from flask import Flask, jsonify, request
@@ -156,7 +160,7 @@ class Movimentacao(db.Model):
 
 
 class TokenRecuperacao(db.Model):
-    """Reservada para a recuperação de senha (ainda sem rotas)."""
+    """Links de "esqueci minha senha". Guarda só o hash do token, nunca o token em si."""
     __tablename__ = 'tokenrecuperacao'
 
     id_token = db.Column(db.Integer, primary_key=True)
@@ -359,6 +363,143 @@ def excluir_conta(usuario):
     db.session.commit()
 
     return jsonify({"mensagem": "Conta excluída com sucesso"}), 200
+
+
+# ---------------------------------------------------------------------------
+# Recuperação de senha
+# ---------------------------------------------------------------------------
+# Fluxo:
+#  1. POST /api/auth/esqueci-senha {email}
+#     Gera um token aleatório, salva o HASH dele no banco (com validade) e manda
+#     por e-mail um link  <FRONTEND>/redefinir-senha?token=<token>.
+#  2. POST /api/auth/redefinir-senha {token, nova_senha}
+#     Calcula o hash do token recebido, procura no banco, confere validade e uso,
+#     troca a senha e marca o token como utilizado (só vale uma vez).
+#
+# Variáveis de ambiente:
+#  FIGER_FRONTEND_URL   endereço do site (usado para montar o link)
+#  FIGER_SMTP_HOST, FIGER_SMTP_PORT, FIGER_SMTP_USER, FIGER_SMTP_PASSWORD,
+#  FIGER_SMTP_FROM      servidor de e-mail. Sem FIGER_SMTP_HOST, em ambiente
+#                       local o link é apenas impresso no terminal da API.
+VALIDADE_TOKEN_RECUPERACAO = timedelta(minutes=30)
+MENSAGEM_ESQUECI_SENHA = (
+    'Se existir uma conta com esse e-mail, enviaremos um link para redefinir a senha.'
+)
+
+
+def agora_utc():
+    # Coluna DateTime sem fuso: guardamos sempre em UTC "puro"
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
+def hash_do_token(token):
+    return hashlib.sha256(token.encode('utf-8')).hexdigest()  # 64 caracteres
+
+
+def enviar_email_recuperacao(usuario, link):
+    host = os.environ.get('FIGER_SMTP_HOST')
+
+    if not host:
+        if os.environ.get('VERCEL') == '1':
+            app.logger.error('FIGER_SMTP_HOST não configurado: e-mail de recuperação não enviado.')
+        else:
+            # Desenvolvimento: mostra o link no terminal para poder testar sem e-mail
+            print(f'\n[FiGer] Link de recuperação para {usuario.email}:\n{link}\n', flush=True)
+        return
+
+    mensagem = EmailMessage()
+    mensagem['Subject'] = 'FiGer - Redefinição de senha'
+    mensagem['From'] = os.environ.get('FIGER_SMTP_FROM') or os.environ.get('FIGER_SMTP_USER')
+    mensagem['To'] = usuario.email
+    minutos = int(VALIDADE_TOKEN_RECUPERACAO.total_seconds() // 60)
+    mensagem.set_content(
+        f'Olá, {usuario.nome}!\n\n'
+        'Recebemos um pedido para redefinir a senha da sua conta no FiGer.\n'
+        f'Para criar uma nova senha, acesse o link abaixo (válido por {minutos} minutos):\n\n'
+        f'{link}\n\n'
+        'Se não foi você, ignore este e-mail: sua senha continua a mesma.\n'
+    )
+
+    porta = int(os.environ.get('FIGER_SMTP_PORT', '587'))
+    usuario_smtp = os.environ.get('FIGER_SMTP_USER')
+    senha_smtp = os.environ.get('FIGER_SMTP_PASSWORD')
+
+    if porta == 465:
+        servidor = smtplib.SMTP_SSL(host, porta, timeout=10)
+    else:
+        servidor = smtplib.SMTP(host, porta, timeout=10)
+        servidor.starttls()
+
+    with servidor:
+        if usuario_smtp:
+            servidor.login(usuario_smtp, senha_smtp)
+        servidor.send_message(mensagem)
+
+
+@app.route('/api/auth/esqueci-senha', methods=['POST'])
+def esqueci_senha():
+    dados = request.get_json(silent=True) or {}
+    email = str(dados.get('email', '')).strip().lower()
+
+    if not EMAIL_VALIDO.match(email):
+        return erro('Informe um e-mail válido.', 400)
+
+    usuario = Usuario.query.filter(func.lower(Usuario.email) == email).first()
+
+    # A resposta é sempre a mesma, exista a conta ou não. Assim ninguém consegue
+    # usar esta tela para descobrir quais e-mails estão cadastrados.
+    if usuario is None:
+        return jsonify({"mensagem": MENSAGEM_ESQUECI_SENHA}), 200
+
+    # Um pedido novo invalida os links anteriores que ainda não foram usados
+    TokenRecuperacao.query.filter_by(
+        id_usuario=usuario.id_usuario, foi_utilizado=False
+    ).update({"foi_utilizado": True})
+
+    token = secrets.token_urlsafe(32)  # aleatório e impossível de adivinhar
+    db.session.add(TokenRecuperacao(
+        id_usuario=usuario.id_usuario,
+        token_hash=hash_do_token(token),
+        data_expiracao=agora_utc() + VALIDADE_TOKEN_RECUPERACAO,
+    ))
+    db.session.commit()
+
+    frontend = (os.environ.get('FIGER_FRONTEND_URL') or 'http://localhost:5173').rstrip('/')
+    try:
+        enviar_email_recuperacao(usuario, f'{frontend}/redefinir-senha?token={token}')
+    except Exception:  # noqa: BLE001 - falha de e-mail não pode derrubar a rota
+        app.logger.exception('Falha ao enviar e-mail de recuperação de senha.')
+
+    return jsonify({"mensagem": MENSAGEM_ESQUECI_SENHA}), 200
+
+
+@app.route('/api/auth/redefinir-senha', methods=['POST'])
+def redefinir_senha():
+    dados = request.get_json(silent=True) or {}
+    token = str(dados.get('token') or '').strip()
+    nova_senha = dados.get('nova_senha')
+
+    registro = None
+    if token:
+        registro = TokenRecuperacao.query.filter_by(token_hash=hash_do_token(token)).first()
+
+    if (
+        registro is None
+        or registro.foi_utilizado
+        or registro.data_expiracao < agora_utc()
+    ):
+        return erro('Este link é inválido ou expirou. Peça um novo.', 400)
+
+    mensagem = validar_senha(nova_senha)
+    if mensagem:
+        return erro(mensagem, 400)
+
+    usuario = db.session.get(Usuario, registro.id_usuario)
+    usuario.senha_hash = generate_password_hash(nova_senha)
+    registro.foi_utilizado = True
+    db.session.commit()
+
+    return jsonify({"mensagem": "Senha redefinida com sucesso"}), 200
 
 
 # ---------------------------------------------------------------------------
