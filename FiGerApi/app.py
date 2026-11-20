@@ -103,12 +103,20 @@ class Usuario(db.Model):
 
 
 class Categoria(db.Model):
-    """Categorias são compartilhadas por todos os usuários."""
+    """Cada usuário tem as próprias categorias (o nome é único por usuário)."""
     __tablename__ = 'categoria'
+    __table_args__ = (
+        db.UniqueConstraint('id_usuario', 'nome', name='categoria_usuario_nome_key'),
+    )
 
     id_categoria = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(30), nullable=False, unique=True)
+    nome = db.Column(db.String(30), nullable=False)
     cor = db.Column(db.String(7), nullable=False, default='#2563eb')
+    id_usuario = db.Column(
+        db.Integer,
+        db.ForeignKey('usuario.id_usuario', ondelete='CASCADE'),
+        nullable=False,
+    )
 
     def to_dict(self, movimentacoes_mes=0):
         return {
@@ -185,10 +193,13 @@ FORMAS_PAGAMENTO_PADRAO = ['Pix', 'Cartão', 'Dinheiro']
 CATEGORIA_RENDA = 'Renda'  # não entra no resumo de gastos
 
 
+def criar_categorias_padrao(usuario):
+    """Toda conta nova começa com as categorias padrão (cópias só dela)."""
+    for nome, cor in CATEGORIAS_PADRAO:
+        db.session.add(Categoria(nome=nome, cor=cor, id_usuario=usuario.id_usuario))
+
+
 def popular_dados_iniciais():
-    if Categoria.query.count() == 0:
-        for nome, cor in CATEGORIAS_PADRAO:
-            db.session.add(Categoria(nome=nome, cor=cor))
     if FormaPagamento.query.count() == 0:
         for nome in FORMAS_PAGAMENTO_PADRAO:
             db.session.add(FormaPagamento(nome=nome))
@@ -290,6 +301,8 @@ def register():
 
     usuario = Usuario(nome=nome, email=email, senha_hash=generate_password_hash(senha))
     db.session.add(usuario)
+    db.session.flush()  # gera o id_usuario antes de criar as categorias
+    criar_categorias_padrao(usuario)
     db.session.commit()
 
     return resposta_de_login(usuario, 201)
@@ -358,6 +371,7 @@ def excluir_conta(usuario):
         return erro('Senha incorreta. A conta não foi excluída.', 400)
 
     Movimentacao.query.filter_by(id_usuario=usuario.id_usuario).delete()
+    Categoria.query.filter_by(id_usuario=usuario.id_usuario).delete()
     TokenRecuperacao.query.filter_by(id_usuario=usuario.id_usuario).delete()
     db.session.delete(usuario)
     db.session.commit()
@@ -515,7 +529,15 @@ def get_formas_pagamento(usuario):
 # ---------------------------------------------------------------------------
 # Movimentações (sempre só as do usuário logado)
 # ---------------------------------------------------------------------------
-def validar_movimentacao(dados):
+def categoria_do_usuario(usuario, id_categoria):
+    """Busca a categoria só se ela pertencer ao usuário; senão devolve None."""
+    categoria = db.session.get(Categoria, para_inteiro(id_categoria) or 0)
+    if categoria is None or categoria.id_usuario != usuario.id_usuario:
+        return None
+    return categoria
+
+
+def validar_movimentacao(dados, usuario):
     """Devolve (campos, mensagem_de_erro)."""
     dados = dados or {}
 
@@ -537,7 +559,7 @@ def validar_movimentacao(dados):
         except ValueError:
             return None, 'Data inválida. Use o formato aaaa-mm-dd.'
 
-    categoria = db.session.get(Categoria, para_inteiro(dados.get('id_categoria')) or 0)
+    categoria = categoria_do_usuario(usuario, dados.get('id_categoria'))
     if categoria is None:
         return None, 'Escolha uma categoria válida.'
 
@@ -574,7 +596,7 @@ def get_movimentacoes(usuario):
 @app.route('/api/movimentacoes', methods=['POST'])
 @login_obrigatorio
 def create_movimentacao(usuario):
-    campos, mensagem = validar_movimentacao(request.get_json(silent=True))
+    campos, mensagem = validar_movimentacao(request.get_json(silent=True), usuario)
     if mensagem:
         return erro(mensagem, 400)
 
@@ -627,7 +649,7 @@ def get_resumo_categorias(usuario):
     vazio = {"saida": 0.0, "qtd_saida": 0, "qtd_entrada": 0}
     resumo = []
 
-    for categoria in Categoria.query.order_by(Categoria.id_categoria).all():
+    for categoria in categorias_do_usuario(usuario):
         item = totais.get(categoria.id_categoria, vazio)
 
         # Categorias de entrada (como Renda) não são "gastos"
@@ -647,9 +669,17 @@ def get_resumo_categorias(usuario):
 
 
 # ---------------------------------------------------------------------------
-# Categorias (compartilhadas por todos os usuários)
+# Categorias (cada usuário só vê e altera as próprias)
 # ---------------------------------------------------------------------------
-def validar_categoria(dados, ignorar_id=None):
+def categorias_do_usuario(usuario):
+    return (
+        Categoria.query.filter_by(id_usuario=usuario.id_usuario)
+        .order_by(Categoria.id_categoria)
+        .all()
+    )
+
+
+def validar_categoria(usuario, dados, ignorar_id=None):
     """Devolve (nome, cor, mensagem_de_erro, status)."""
     dados = dados or {}
     nome = str(dados.get('nome', '')).strip()
@@ -662,7 +692,8 @@ def validar_categoria(dados, ignorar_id=None):
     if not COR_HEX.match(cor):
         return None, None, 'Cor inválida. Use o formato #RRGGBB.', 400
 
-    for existente in Categoria.query.all():
+    # Nome repetido só conta entre as categorias do próprio usuário
+    for existente in categorias_do_usuario(usuario):
         if existente.id_categoria != ignorar_id and nomes_iguais(existente.nome, nome):
             return None, None, 'Já existe uma categoria com esse nome.', 409
 
@@ -685,18 +716,18 @@ def get_categorias(usuario):
         .all()
     )
 
-    categorias = Categoria.query.order_by(Categoria.id_categoria).all()
+    categorias = categorias_do_usuario(usuario)
     return jsonify([c.to_dict(contagem.get(c.id_categoria, 0)) for c in categorias]), 200
 
 
 @app.route('/api/categorias', methods=['POST'])
 @login_obrigatorio
 def create_categoria(usuario):
-    nome, cor, mensagem, status = validar_categoria(request.get_json(silent=True))
+    nome, cor, mensagem, status = validar_categoria(usuario, request.get_json(silent=True))
     if mensagem:
         return erro(mensagem, status)
 
-    categoria = Categoria(nome=nome, cor=cor)
+    categoria = Categoria(nome=nome, cor=cor, id_usuario=usuario.id_usuario)
     db.session.add(categoria)
     db.session.commit()
 
@@ -706,11 +737,14 @@ def create_categoria(usuario):
 @app.route('/api/categorias/<int:id>', methods=['PUT'])
 @login_obrigatorio
 def update_categoria(usuario, id):
-    categoria = db.session.get(Categoria, id)
+    # Categoria de outro usuário responde como se não existisse
+    categoria = categoria_do_usuario(usuario, id)
     if not categoria:
         return erro('Categoria não encontrada', 404)
 
-    nome, cor, mensagem, status = validar_categoria(request.get_json(silent=True), ignorar_id=id)
+    nome, cor, mensagem, status = validar_categoria(
+        usuario, request.get_json(silent=True), ignorar_id=id
+    )
     if mensagem:
         return erro(mensagem, status)
 
@@ -725,7 +759,7 @@ def update_categoria(usuario, id):
 @app.route('/api/categorias/<int:id>', methods=['DELETE'])
 @login_obrigatorio
 def delete_categoria(usuario, id):
-    categoria = db.session.get(Categoria, id)
+    categoria = categoria_do_usuario(usuario, id)
     if not categoria:
         return erro('Categoria não encontrada', 404)
 
